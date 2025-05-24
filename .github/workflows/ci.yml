@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  test_matrix:
+    name: ${{ matrix.os }}, Erlang/OTP ${{ matrix.otp-version }} Elixir ${{ matrix.elixir-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            elixir-version: 1.15
+            otp-version: 25
+          - os: ubuntu-24.04
+            elixir-version: 1.15
+            otp-version: 26
+          - os: ubuntu-24.04
+            elixir-version: 1.16
+            otp-version: 25
+          - os: ubuntu-24.04
+            elixir-version: 1.16
+            otp-version: 26
+          - os: ubuntu-24.04
+            elixir-version: 1.17
+            otp-version: 25
+          - os: ubuntu-24.04
+            elixir-version: 1.17
+            otp-version: 26
+          - os: ubuntu-24.04
+            elixir-version: 1.17
+            otp-version: 27
+          - os: ubuntu-24.04
+            elixir-version: 1.18
+            otp-version: 25
+          - os: ubuntu-24.04
+            elixir-version: 1.18
+            otp-version: 26
+          - os: ubuntu-24.04
+            elixir-version: 1.18
+            otp-version: 27
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ matrix.elixir-version }}
+          otp-version: ${{ matrix.otp-version }}
+      - name: Restore dependencies cache
+        uses: actions/cache@v4
+        with:
+          path: deps
+          key: ${{ runner.os }}-${{ matrix.elixir-version }}-${{ matrix.otp-version}}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.elixir-version}}-${{ matrix.otp-version }}-mix-
+      - name: Install dependencies
+        run: mix deps.get
+      - name: Run mix format
+        run: mix format --check-formatted
+      - name: Compile with warnings as errors
+        run: mix compile --warnings-as-errors
+      - name: Run Credo (basic)
+        run: mix credo --strict
+      - name: Check unused dependencies
+        run: mix deps.unlock --check-unused
+      - name: Run tests
+        run: mix test
+      - name: Test coverage
+        run: mix test --cover
+        if: matrix.elixir-version == '1.18' && matrix.otp-version == '27'
+      - name: Test if docs can be built
+        run: mix docs
+        if: matrix.elixir-version == '1.18' && matrix.otp-version == '27'
+      - name: Check Hex package can be built
+        run: mix hex.build
+        if: matrix.elixir-version == '1.18' && matrix.otp-version == '27'
