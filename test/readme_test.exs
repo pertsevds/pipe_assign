@@ -3,8 +3,7 @@
 
 defmodule ReadmeTest do
   @moduledoc """
-  Tests that verify the examples in README.md work correctly.
-  This ensures our documentation stays accurate.
+  Tests from README.md.
   """
 
   use ExUnit.Case
@@ -12,7 +11,6 @@ defmodule ReadmeTest do
   import PipeAssign
 
   test "data processing pipeline example concept" do
-    # Simplified version of the README example
     raw_data = ~s({"name": "test", "active": true})
 
     raw_data
@@ -30,7 +28,6 @@ defmodule ReadmeTest do
   end
 
   test "solution example concept from README" do
-    # Test the core concept shown in the solution section
     data = %{raw: "test"}
 
     data
