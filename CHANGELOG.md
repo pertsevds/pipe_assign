@@ -1,4 +1,4 @@
-## [1.1.0] - 2025-01-XX
+## [1.1.0] - 2025-06-04
 
 ### Added
 - **New `match_to/2` macro**: it's an alias to `assign_to/2` for readability
@@ -12,7 +12,7 @@
 - Removed complex variable handling logic and compiler warning suppression
 - Removed performance overhead warnings as benchmarks now show negligible impact
 
-## [1.0.0] - 2025-01-XX
+## [1.0.0] - 2025-05-24
 
 ### Added
 - Initial release of PipeAssign
