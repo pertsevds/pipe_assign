@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# SPDX-FileCopyrightText: 2025 Dmitriy Pertsev
+# SPDX-FileCopyrightText: 2025 Dmitriy Pertsev, Derek Zhou
 
 defmodule PipeAssign do
   @moduledoc """
@@ -30,11 +30,38 @@ defmodule PipeAssign do
       |> finalize()
       |> assign_to(result) # Assign to result variable
 
+  In Elixir `=` is a match operator. So we can match against it:
+
+      iex> import PipeAssign
+      iex> %{a: 1, b: 2}
+      ...> |> match_to(%{a: x})
+      %{b: 2, a: 1}
+      iex> x
+      1
+
+  `assign_to/2` is the same as `match_to/2`:
+
+      # These are equivalent
+      value |> match_to(result)
+      value |> assign_to(result)
+
   See the [README](https://hexdocs.pm/pipe_assign) for installation
   instructions, examples, benchmarking results, and detailed usage guidance.
   """
 
-  alias PipeAssign.ErrorHandler
+  @doc """
+  `match_to/2` is the same as `assign_to/2`.
+
+  ## Parameters
+
+  - `value` - The value to match and return
+  - `var` - A valid variable name to match the value to
+  """
+  defmacro match_to(value, var) do
+    quote do
+      unquote(var) = unquote(value)
+    end
+  end
 
   @doc """
   This macro provides in-place assignments for pipes.
@@ -42,6 +69,11 @@ defmodule PipeAssign do
   The variable will be assigned the piped value and the value continues through the pipe,
   allowing you to capture intermediate results without breaking the pipe flow or requiring
   separate assignment statements.
+
+  ## Parameters
+
+  - `value` - The value to assign and return
+  - `var` - A valid variable name to assign the value to
 
   ## Examples
 
@@ -74,10 +106,13 @@ defmodule PipeAssign do
       iex> Map.get(complete, :active)
       true
 
-  Works seamlessly with existing variables (no compiler warnings):
+  Works seamlessly with existing variables:
 
       iex> import PipeAssign
-      iex> temp = nil
+      iex> temp = "initial"
+      "initial"
+      iex> String.length(temp)
+      7
       iex> "hello world"
       ...> |> String.upcase()
       ...> |> assign_to(temp)
@@ -96,24 +131,8 @@ defmodule PipeAssign do
       [2, 4]
   """
   defmacro assign_to(value, var) do
-    var_name = ErrorHandler.validate_and_extract_var_name(var)
-
-    caller = __CALLER__
-    var_exists = Enum.any?(Macro.Env.vars(caller), fn {name, _ctx} -> name == var_name end)
-
-    if var_exists do
-      quote do
-        value = unquote(value)
-        _ = unquote(var)
-        unquote(var) = value
-        value
-      end
-    else
-      quote do
-        value = unquote(value)
-        var!(unquote(var)) = value
-        value
-      end
+    quote do
+      unquote(var) = unquote(value)
     end
   end
 end

@@ -3,16 +3,48 @@
 
 defmodule ReadmeTest do
   @moduledoc """
-  Tests that verify the examples in README.md work correctly.
-  This ensures our documentation stays accurate.
+  Tests from README.md.
   """
 
   use ExUnit.Case
 
-  import PipeAssign
+  test "match_to without import" do
+    {result, _bindings} =
+      Code.eval_quoted(
+        quote do
+          require PipeAssign
+
+          "test"
+          |> String.upcase()
+          |> PipeAssign.match_to(result)
+
+          result
+        end
+      )
+
+    assert result == "TEST"
+  end
+
+  test "assign_to without import" do
+    {result, _bindings} =
+      Code.eval_quoted(
+        quote do
+          require PipeAssign
+
+          "test"
+          |> String.upcase()
+          |> PipeAssign.assign_to(result)
+
+          result
+        end
+      )
+
+    assert result == "TEST"
+  end
 
   test "data processing pipeline example concept" do
-    # Simplified version of the README example
+    import PipeAssign
+
     raw_data = ~s({"name": "test", "active": true})
 
     raw_data
@@ -30,7 +62,8 @@ defmodule ReadmeTest do
   end
 
   test "solution example concept from README" do
-    # Test the core concept shown in the solution section
+    import PipeAssign
+
     data = %{raw: "test"}
 
     data
