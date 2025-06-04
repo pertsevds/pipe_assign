@@ -38,19 +38,6 @@ defmodule Mix.Tasks.Benchmark do
     * `string` - String processing benchmarks
     * `list` - List processing benchmarks
     * `map` - Map manipulation benchmarks
-
-  ## Test Environment
-
-  All benchmark results and performance recommendations are based on testing performed on:
-
-  - **Hardware**: MacBook Air M1 16GB RAM
-  - **Operating System**: macOS
-  - **Elixir Version**: 1.18.3
-  - **Erlang/OTP Version**: 27.3.3
-  - **JIT Compilation**: Enabled
-
-  Performance characteristics will vary on different hardware configurations.
-
   """
 
   use Mix.Task

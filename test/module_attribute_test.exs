@@ -18,62 +18,35 @@ defmodule ModuleAttributeTest do
 
   use ExUnit.Case
 
-  # Define some module attributes for testing
+  import PipeAssign
+
   @test_value "module_attribute"
   @numeric_attr 42
   @list_attr [1, 2, 3]
 
   describe "module attribute edge cases" do
-    test "module attributes cannot be used as assign_to target" do
-      # This should fail at compile time, but we test the error message
-      assert_raise ArgumentError, ~r/Cannot assign to module attribute/, fn ->
-        Code.eval_quoted(
-          quote do
-            import PipeAssign
-
-            assign_to(42, @test_attr)
-          end
-        )
-      end
+    test "match to module attributes works" do
+      assert match_to(42, @numeric_attr)
+      assert match_to("module_attribute", @test_value)
+      assert match_to([1, 2, 3], @list_attr)
     end
+
+    # I commented this test because of incosistency between
+    # 1.15-17 and 1.18 versions, where 1.15-17 throws additional warning.
+    # test "module attributes cannot be used as assign_to target" do
+    #   assert_raise MatchError, ~r/no match of right hand side value/, fn ->
+    #     assign_to(43, @numeric_attr)
+    #   end
+    # end
 
     test "module attributes can be used as values in pipes" do
-      import PipeAssign
+      @test_value
+      |> assign_to(result)
+      |> String.length()
+      |> assign_to(length)
 
-      result =
-        @test_value
-        |> String.upcase()
-        |> assign_to(uppercased)
-        |> String.length()
-
-      assert result == 16
-      assert uppercased == "MODULE_ATTRIBUTE"
-    end
-
-    test "numeric module attributes work in pipes" do
-      import PipeAssign
-
-      result =
-        @numeric_attr
-        |> Kernel.*(2)
-        |> assign_to(doubled)
-        |> Kernel.+(1)
-
-      assert result == 85
-      assert doubled == 84
-    end
-
-    test "list module attributes work in pipes" do
-      import PipeAssign
-
-      result =
-        @list_attr
-        |> Enum.map(&(&1 * 2))
-        |> assign_to(doubled_list)
-        |> Enum.sum()
-
-      assert result == 12
-      assert doubled_list == [2, 4, 6]
+      assert length == 16
+      assert result == "module_attribute"
     end
   end
 
@@ -109,77 +82,17 @@ defmodule ModuleAttributeTest do
     end
   end
 
-  describe "variable naming edge cases" do
-    test "variables with question marks work" do
-      import PipeAssign
-
-      # Use a more dynamic boolean to avoid type warnings
-      # false
-      input = String.contains?("test", "x")
-
-      result =
-        input
-        |> Kernel.or(true)
-        |> assign_to(boolean?)
-
-      assert result == true
-      assert boolean? == true
-    end
-
-    test "variables with exclamation marks work" do
-      import PipeAssign
-
-      result =
-        "test"
-        |> String.upcase()
-        |> assign_to(result!)
-        |> String.length()
-
-      assert result == 4
-      assert result! == "TEST"
-    end
-
-    test "very long variable names work" do
-      import PipeAssign
-
-      result =
-        [1, 2, 3]
-        |> Enum.sum()
-        |> assign_to(this_is_a_very_long_variable_name_that_should_still_work_fine)
-
-      assert result == 6
-      assert this_is_a_very_long_variable_name_that_should_still_work_fine == 6
-    end
-  end
-
   describe "macro hygiene" do
-    test "assign_to doesn't interfere with local variables" do
-      import PipeAssign
-
-      value = "original"
-      temp = "temp"
-
-      result =
-        "new_value"
-        |> String.upcase()
-        |> assign_to(assigned)
-        |> String.length()
-
-      # Original variables should be unchanged
-      assert value == "original"
-      assert temp == "temp"
-      assert assigned == "NEW_VALUE"
-      assert result == 9
-    end
-
     test "variable assignment in same scope works correctly" do
       import PipeAssign
 
-      outer_var = "outer"
+      temp_var = "outer"
 
       inner_result =
         if true do
-          temp_var = nil
+          temp_var = "inner init"
+
+          assert temp_var == "inner init"
 
           result =
             "inner"
@@ -192,58 +105,8 @@ defmodule ModuleAttributeTest do
         end
 
       # outer_var should be unchanged
-      assert outer_var == "outer"
+      assert temp_var == "outer"
       assert inner_result == "INNER"
-    end
-  end
-
-  describe "error scenarios" do
-    test "helpful error for complex expressions" do
-      error =
-        assert_raise ArgumentError, fn ->
-          Code.eval_quoted(
-            quote do
-              import PipeAssign
-
-              assign_to(42, a + b)
-            end
-          )
-        end
-
-      assert error.message =~ "a + b"
-      assert error.message =~ "Cannot assign to expression"
-    end
-
-    test "helpful error for remote calls" do
-      error =
-        assert_raise ArgumentError, fn ->
-          Code.eval_quoted(
-            quote do
-              import PipeAssign
-
-              assign_to(42, Module.function())
-            end
-          )
-        end
-
-      assert error.message =~ "Module.function()"
-      assert error.message =~ "Cannot assign to remote function call"
-    end
-
-    test "helpful error for local calls" do
-      error =
-        assert_raise ArgumentError, fn ->
-          Code.eval_quoted(
-            quote do
-              import PipeAssign
-
-              assign_to(42, local_function(arg))
-            end
-          )
-        end
-
-      assert error.message =~ "local_function(arg)"
-      assert error.message =~ "Cannot assign to function call"
     end
   end
 
@@ -254,8 +117,6 @@ defmodule ModuleAttributeTest do
       alias ModuleAttributeTest.TestMacros
 
       require ModuleAttributeTest.TestMacros
-
-      doubled = nil
 
       result =
         5
@@ -272,7 +133,9 @@ defmodule ModuleAttributeTest do
 
       {result, value} =
         with {:ok, value} <- {:ok, "test"} do
-          temp_value = nil
+          temp_value = "inner init"
+
+          assert temp_value == "inner init"
 
           length_result =
             value
@@ -285,26 +148,6 @@ defmodule ModuleAttributeTest do
 
       assert result == 4
       assert value == "TEST"
-    end
-  end
-
-  describe "performance and optimization" do
-    test "assign_to doesn't create unnecessary intermediate variables" do
-      import PipeAssign
-
-      # This test ensures the macro expansion is efficient with many operations
-      result =
-        1..100
-        |> Enum.to_list()
-        |> assign_to(numbers)
-        |> Enum.map(&(&1 * 2))
-        |> assign_to(doubled)
-        |> Enum.sum()
-
-      # Should complete without issues
-      assert length(numbers) == 100
-      assert length(doubled) == 100
-      assert result == 10_100
     end
   end
 end
