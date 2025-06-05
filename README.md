@@ -280,6 +280,7 @@ Tests automatically run against a matrix of OTP and Elixir Versions, see the [ci
 | 25           | ✅  | ✅  | ✅  | ✅  |
 | 26           | ✅  | ✅  | ✅  | ✅  |
 | 27           | N/A  | N/A  | ✅  | ✅  |
+| 28           | N/A  | N/A  | N/A  | ✅  |
 
 ## Documentation
 

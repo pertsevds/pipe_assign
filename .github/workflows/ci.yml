@@ -17,36 +17,39 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             elixir-version: 1.15
             otp-version: 25
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             elixir-version: 1.15
             otp-version: 26
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             elixir-version: 1.16
             otp-version: 25
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             elixir-version: 1.16
             otp-version: 26
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             elixir-version: 1.17
             otp-version: 25
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             elixir-version: 1.17
             otp-version: 26
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             elixir-version: 1.17
             otp-version: 27
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             elixir-version: 1.18
             otp-version: 25
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             elixir-version: 1.18
             otp-version: 26
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             elixir-version: 1.18
             otp-version: 27
+          - os: ubuntu-latest
+            elixir-version: 1.18.4
+            otp-version: 28
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
