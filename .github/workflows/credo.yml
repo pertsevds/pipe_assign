@@ -40,7 +40,7 @@ jobs:
         otp: ['28']
         elixir: ['1.19']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: erlef/setup-beam@v1
         with:
           otp-version: ${{matrix.otp}}
@@ -54,7 +54,7 @@ jobs:
       - name: credo-scan
         run: mix credo --format=sarif > credo_output.sarif
       - name: upload sarif
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           # Path to SARIF file relative to the root of the repository
           sarif_file: credo_output.sarif
