@@ -1,3 +1,9 @@
+## [1.1.1] - 2026-03-13
+
+### Changed
+- Updated dependencies
+- Updated CI
+
 ## [1.1.0] - 2025-06-04
 
 ### Added
