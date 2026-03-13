@@ -10,6 +10,9 @@
 # Where third-party dependencies like ExDoc output generated docs.
 /doc/
 
+# Temporary files, for example, from tests.
+/tmp/
+
 # If the VM crashes, it generates a dump, let's ignore it too.
 erl_crash.dump
 
@@ -18,6 +21,28 @@ erl_crash.dump
 
 # Ignore package tarball (built via "mix hex.build").
 pipe_assign-*.tar
+
+# Temporary files, for example, from tests.
+/tmp/
+
+# VS Code
+.vscode/*
+!.vscode/launch.json
+!.vscode/settings.json
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
+# Bak files
+/bak/
+*.bak
+
+.DS_Store
+*.drawio.bkp
+
+# Expert LSP
+.expert/
 
 # Temporary files, for example, from tests.
 /tmp/
