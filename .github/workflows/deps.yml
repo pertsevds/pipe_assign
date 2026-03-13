@@ -5,6 +5,7 @@ on:
     branches:
       - "main"
   pull_request: {}
+  workflow_dispatch:
 
 # The API requires write permission on the repository to submit dependencies
 permissions:
