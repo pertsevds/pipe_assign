@@ -7,7 +7,7 @@ defmodule PipeAssign.MixProject do
   def project do
     [
       app: :pipe_assign,
-      version: "1.1.1",
+      version: "1.1.2",
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       description: description(),
