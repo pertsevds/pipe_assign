@@ -116,7 +116,7 @@ defmodule ModuleAttributeTest do
 
       alias ModuleAttributeTest.TestMacros
 
-      require ModuleAttributeTest.TestMacros
+      require TestMacros
 
       result =
         5
