@@ -3,7 +3,7 @@
 
 defmodule ReadmeTest do
   @moduledoc """
-  Tests from README.md.
+  Tests based on README.md examples plus conceptual pipeline coverage.
   """
 
   use ExUnit.Case
@@ -42,14 +42,13 @@ defmodule ReadmeTest do
     assert result == "TEST"
   end
 
-  test "data processing pipeline example concept" do
+  test "data processing pipeline concept" do
     import PipeAssign
 
-    raw_data = ~s({"name": "test", "active": true})
+    input_data = %{name: "test", active: true}
 
-    raw_data
-    |> Jason.decode!()
-    |> assign_to(parsed_json)
+    input_data
+    |> assign_to(parsed_data)
     |> Map.put(:processed, true)
     |> assign_to(normalized)
     |> Map.keys()
@@ -57,7 +56,8 @@ defmodule ReadmeTest do
     |> assign_to(result)
 
     assert result == 3
-    assert Map.get(parsed_json, "name") == "test"
+    assert parsed_data == input_data
+    assert Map.get(parsed_data, :name) == "test"
     assert Map.get(normalized, :processed) == true
   end
 
