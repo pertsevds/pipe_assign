@@ -17,12 +17,14 @@ name: Credo
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - "main"
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - "main"
   schedule:
     - cron: '35 0 * * 1'
-  workflow_dispatch:
+  workflow_dispatch: {}
 
 permissions:
   contents: read
