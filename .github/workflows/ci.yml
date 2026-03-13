@@ -69,7 +69,7 @@ jobs:
           otp-version: ${{ matrix.otp-version }}
 
       - name: Restore dependencies cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: deps
           key: ${{ runner.os }}-${{ matrix.elixir-version }}-${{ matrix.otp-version }}-mix-${{ hashFiles('**/mix.lock') }}
